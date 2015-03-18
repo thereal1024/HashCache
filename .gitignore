@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Local server configs
+*nginx.conf
+uwsgi_params
