@@ -39,7 +39,7 @@ def closewindow():
     print("Collection Window Closed")
 
 def hashdocument(fileName):
-    print hashlib.md5(open(fileName, 'rb').read()).hexdigest()
+    print hashlib.sha256(open(fileName, 'rb').read()).hexdigest()
 
 def adddocument(documentHash):
     print("Added Document Hash to current collection window")
