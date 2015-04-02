@@ -1,5 +1,5 @@
-CREATE DATABASE HashCache;
-USE HashCache;
+CREATE DATABASE hashcache;
+USE hashcache;
 
 CREATE TABLE Transaction(
 	transactionID BINARY(32) PRIMARY KEY,
