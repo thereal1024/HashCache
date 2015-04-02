@@ -57,7 +57,8 @@ def submit_hash(request):
 def hash_info(request, hashhex):
 	resp = 'error'
 	with connection.cursor() as c:
-		c.execute('SELECT min(nodeID) FROM NodeHash WHERE hash = unhex(%s)', [hashhex])
+		c.execute('SELECT min(nodeID) FROM NodeHash WHERE hash = unhex(%s) '
+			'AND treeLevel=0', [hashhex])
 		hid = c.fetchone()[0]
 		if not hid:
 			return PlainResponse('error: hash not submitted')
