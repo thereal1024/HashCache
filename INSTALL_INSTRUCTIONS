@@ -12,3 +12,6 @@ source test.sql
 
 # use to launch server
 python3 manage.py runserver
+
+# you may get a message to 'migrate'
+python3 manage.py migrate
