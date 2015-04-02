@@ -1,4 +1,4 @@
-drop database cashcache;
+drop database hashcache;
 source dbinit.sql;
 source hashins.sql;
 -- case 3 nodes

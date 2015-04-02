@@ -131,8 +131,10 @@ BEGIN
 		INSERT INTO Siblings VALUES (@CURID, NULL);
 	END IF;
 	
-	-- TODO list merkle root etc.
-	INSERT INTO MerkleRoot VALUES (@CURID);
+	-- add merkle root listing
+	IF @MAXL >= 0 THEN
+		INSERT INTO MerkleRoot VALUES (@CURID);
+	END IF;
 	
 END //
 
