@@ -5,9 +5,11 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 import binascii
 
+PlainResponse = lambda s: HttpResponse(s, content_type="text/plain")
+
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello world. This is HashCache. Served by Python Django.")
+    return PlainResponse("Hello world. This is HashCache. Served by Python Django.")
 
 def open_window(request):
 	resp = 'error'
@@ -16,7 +18,7 @@ def open_window(request):
 		c.execute('select @newwin')
 		row = c.fetchone()
 		resp = row[0]
-	return HttpResponse(resp)
+	return PlainResponse(resp)
 
 def view_window(request, winnum):
 	resp = 'error'
@@ -26,19 +28,19 @@ def view_window(request, winnum):
 			'treeLevel=0 and windowID=%s', [winnum])
 		rows = c.fetchall()
 		resp = '\n'.join([row[0]for row in rows])
-	return HttpResponse(resp)
+	return PlainResponse(resp)
 
 @csrf_exempt
 def submit_hash(request):
 	if request.method != 'POST':
-		return HttpResponse("error: use post")
+		return PlainResponse("error: use post")
 	hv = request.POST.get('hash')
 	try:
 		bd = binascii.unhexlify(hv)
 		if len(bd) != 32:
 			raise Exception
 	except Exception:
-		return HttpResponse("error: not valid sha256 hash")
+		return PlainResponse("error: not valid sha256 hash")
 	
 	resp = 'error'
 	with connection.cursor() as c:
@@ -50,7 +52,7 @@ def submit_hash(request):
 			resp = 'OK'
 		else:
 			resp = 'error: hash already submitted'
-	return HttpResponse(resp)
+	return PlainResponse(resp)
 
 def hash_info(request, hashhex):
 	resp = 'error'
@@ -58,7 +60,7 @@ def hash_info(request, hashhex):
 		c.execute('SELECT min(nodeID) FROM NodeHash WHERE hash = unhex(%s)', [hashhex])
 		hid = c.fetchone()[0]
 		if not hid:
-			return HttpResponse('error: hash not submitted')
+			return PlainResponse('error: hash not submitted')
 		c.execute('SELECT endTime IS NOT NULL from NodeHash, Window '
 			'WHERE nodeId=%s and NodeHash.windowID=Window.windowID', [hid])
 		row = c.fetchone()
@@ -72,10 +74,10 @@ def hash_info(request, hashhex):
 		
 		if not completedwindow:
 			resp +='\ncontained window not completed'
-			return HttpResponse(resp)
+			return PlainResponse(resp)
 		
 		c.execute('call merklepath(%s)', [hashhex])
 		rows = c.fetchall()
 		resp += '\nmerkle path:\n' + '\n'.join([','.join(row) for row in rows])
 		
-		return HttpResponse(resp)
+		return PlainResponse(resp)
