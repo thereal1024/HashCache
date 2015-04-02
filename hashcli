@@ -10,10 +10,11 @@ def print_help():
     print("./hashcache help [command name] - display extended command information.\n")
     print("Available commands:")
     print("\topenwindow")
-    print("\tclosewindow")
+    #print("\tclosewindow")
     print("\thashdocument [file path]")
     print("\tadddocument [document hash]")
     print("\tviewwindow [windowID]")
+    print("\tviewdocument [document hash]")
 
 def print_command_help(command):
     """ Display extended help information for CLI command
@@ -21,12 +22,14 @@ def print_command_help(command):
     COMMANDS = \
         { "openwindow": \
             "Opens a collection window on the server, allowing documents to be uploaded.", \
-          "closewindow": \
-            "Closes a collection window on the server, printing the collectionID for the closed collection window", \
+          #"closewindow": \
+          #  "Closes a collection window on the server, printing the collectionID for the closed collection window", \
           "hashdocument": \
             "Provide a document hash for the input file", \
           "viewwindow": \
             "Display all known document hashes for the associated collection window.", \
+          "viewdocument": \
+            "Display info on document hash.", \
         }
     if command in COMMANDS:
         print (COMMANDS[command])
@@ -46,10 +49,10 @@ def viewwindow(windowID):
 
 
 
-def closewindow():
-	closeRequest = urllib2.Request(server + "api/window/close")
-	closeResponse = urllib2.urlopen(closeRequest)
-	print(closeResponse.read())   
+#def closewindow():
+#	closeRequest = urllib2.Request(server + "api/window/close")
+#	closeResponse = urllib2.urlopen(closeRequest)
+#	print(closeResponse.read())   
 
 
 def hashdocument(fileName):
@@ -60,9 +63,15 @@ def adddocument(documentHash):
 	opener = urllib2.build_opener(urllib2.HTTPHandler())
 	hashData = urllib.urlencode({'hash' : documentHash})
 	content = opener.open(server + "api/hashes", data=hashData).read()
-	print("Added Document Hash to current collection window")
+	if content == 'OK':
+		print("Added Document Hash to current collection window")
+	else:
+		print(content)
 
-
+def viewdocument(documentHash):
+	viewRequest = urllib2.Request(server + "api/hashes/" + documentHash)
+	viewResponse = urllib2.urlopen(viewRequest)
+	print(viewResponse.read())  
 
 def process_command(command):
     """ Process a command-line command and execute the 
@@ -80,8 +89,8 @@ def process_command(command):
             print_help()
     elif command == 'openwindow':
         openwindow()
-    elif command == 'closewindow':
-        closewindow()
+   # elif command == 'closewindow':
+   #     closewindow()
     elif command == 'viewwindow':
         if (len(sys.argv)==3):
             viewwindow(sys.argv[2])
@@ -95,6 +104,12 @@ def process_command(command):
     elif command == 'adddocument':
         if(len(sys.argv)==3):
             adddocument(sys.argv[2])
+        else:
+            print_help()
+            
+    elif command == 'viewdocument':
+        if(len(sys.argv)==3):
+            viewdocument(sys.argv[2])
         else:
             print_help()
     else:
