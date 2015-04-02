@@ -12,7 +12,7 @@ CREATE TABLE Transaction(
 );
 
 CREATE TABLE MerkleRoot(
-	nodeID BINARY(32) PRIMARY KEY
+	nodeID INTEGER PRIMARY KEY
 );
 
 CREATE TABLE Proof(
