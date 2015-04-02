@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
+from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 import binascii
 
@@ -17,11 +18,12 @@ def open_window(request):
 		resp = row[0]
 	return HttpResponse(resp)
 
-def view_window(request):
+def view_window(request, winnum):
 	resp = 'error'
 	with connection.cursor() as c:
+		winnum = int(winnum)
 		c.execute('select hex(hash) from NodeHash where '
-			'treeLevel=0 and windowID=1')
+			'treeLevel=0 and windowID=%s', [winnum])
 		rows = c.fetchall()
 		resp = '\n'.join([row[0]for row in rows])
 	return HttpResponse(resp)
