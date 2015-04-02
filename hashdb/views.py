@@ -51,3 +51,31 @@ def submit_hash(request):
 		else:
 			resp = 'error: hash already submitted'
 	return HttpResponse(resp)
+
+def hash_info(request, hashhex):
+	resp = 'error'
+	with connection.cursor() as c:
+		c.execute('SELECT min(nodeID) FROM NodeHash WHERE hash = unhex(%s)', [hashhex])
+		hid = c.fetchone()[0]
+		if not hid:
+			return HttpResponse('error: hash not submitted')
+		c.execute('SELECT endTime IS NOT NULL from NodeHash, Window '
+			'WHERE nodeId=%s and NodeHash.windowID=Window.windowID', [hid])
+		row = c.fetchone()
+		completedwindow = (row[0] == 1)
+		
+		c.execute('SELECT uploadTime FROM SubmittedHashes WHERE hash=unhex(%s)', [hashhex])
+		uploadTime = c.fetchone()[0]
+		
+		resp =  'hash: %s\n' % hashhex
+		resp += 'added: %s\n' % uploadTime
+		
+		if not completedwindow:
+			resp +='\ncontained window not completed'
+			return HttpResponse(resp)
+		
+		c.execute('call merklepath(%s)', [hashhex])
+		rows = c.fetchall()
+		resp += '\n' + '\n'.join([','.join(row) for row in rows])
+		
+		return HttpResponse(resp)

@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     url(r'^api/window/open$', views.open_window, name='api-open-window'),
 	url(r'^api/window/id/([0-9]+)$', views.view_window, name='api-view-window'),
 	url(r'^api/hashes$', views.submit_hash, name='api-submit-hash'),
+	url(r'^api/hashes/([0-9a-fA-F]{64})$', views.hash_info, name='api-hash-info'),
 )
