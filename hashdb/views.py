@@ -76,6 +76,6 @@ def hash_info(request, hashhex):
 		
 		c.execute('call merklepath(%s)', [hashhex])
 		rows = c.fetchall()
-		resp += '\n' + '\n'.join([','.join(row) for row in rows])
+		resp += '\nmerkle path:\n' + '\n'.join([','.join(row) for row in rows])
 		
 		return HttpResponse(resp)
