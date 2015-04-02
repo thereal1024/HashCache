@@ -1,0 +1,14 @@
+# dependencies
+sudo apt-get install python3-pip # package manager for python 3
+sudo apt-get install mysql-server libmysqlclient-dev # mysql
+sudo pip3 install django mysqlclient # django
+
+# init db my runining the following in the mysql command line
+source dbinit.sql
+source hashins.sql
+
+# or to populate with test data
+source test.sql
+
+# use to launch server
+python3 manage.py runserver
