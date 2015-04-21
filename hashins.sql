@@ -31,9 +31,9 @@ addhashmain:BEGIN
 			-- new node is sibling on the right
 			UPDATE Siblings SET rightID = @CURID WHERE leftID = @SIBL;
 			-- hash for parent
-			SET @HASH = unhex(sha2(sha2(CONCAT(
+			SET @HASH = unhex(sha2(unhex(sha2(CONCAT(
 			(SELECT hash FROM NodeHash WHERE NodeId = @SIBL),
-			@HASH), 256), 256));
+			@HASH), 256)), 256));
 			-- create parent and capture id
 			INSERT INTO NodeHash VALUES (NULL, @HASH, @WIN, @INDEX + 1);
 			SET @NEWNODE = LAST_INSERT_ID();
@@ -89,9 +89,9 @@ BEGIN
 				-- link unpaired as sibling to raised node
 				UPDATE Siblings SET rightID = @CURID WHERE leftID = @UNPAIR;
 				-- join hash values
-				SET @HASH = unhex(sha2(sha2(CONCAT(
+				SET @HASH = unhex(sha2(unhex(sha2(CONCAT(
 					(SELECT hash FROM NodeHash WHERE NodeId = @UNPAIR),
-					@HASH), 256), 256));
+					@HASH), 256)), 256));
 				-- create new parent and capture id
 				INSERT INTO NodeHash VALUES (NULL, @HASH, @WIN, @INDEX + 1);
 				SET @NEWNODE = LAST_INSERT_ID();
@@ -108,7 +108,7 @@ BEGIN
 				-- last created node should be sibling with itself
 				INSERT INTO Siblings VALUES (@CURID, @CURID);
 				-- join hash with itself
-				SET @HASH = unhex(sha2(sha2(CONCAT(@HASH,@HASH), 256), 256));
+				SET @HASH = unhex(sha2(unhex(sha2(CONCAT(@HASH,@HASH), 256)), 256));
 				-- create new parent and capture id
 				INSERT INTO NodeHash VALUES (NULL, @HASH, @WIN, @INDEX + 1);
 				SET @NEWNODE = LAST_INSERT_ID();
