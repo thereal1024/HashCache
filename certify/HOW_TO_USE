@@ -1,0 +1,2 @@
+# show the demo works by running
+python3 cert_verify.py cert_demo_l1 cert_demo_l1.dproof
