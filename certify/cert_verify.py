@@ -2,8 +2,13 @@ import hashlib
 import binascii
 import json
 import sys
+import time
 import urllib.request
 from functools import partial
+
+APILOC = 'https://insight.bitpay.com/api/block/%s'
+APIJSONMERKLE = 'merkleroot'
+APIJSONTIME = 'time'
 
 if len(sys.argv) < 3:
     print('Usage: python3 %s [file_to_check] [proof]' % sys.argv[0])
@@ -56,11 +61,12 @@ with open(sys.argv[2], 'r') as proof_file:
     block_path = proof['blockMerklePath']
     merkle_root_be = pathwalk(whash, block_path)
     merkle_root_le = r(merkle_root_be)
-    rq = urllib.request.urlopen('https://insight.bitpay.com/api/block/%s' % proof['blockID'])
+    rq = urllib.request.urlopen(APILOC % proof['blockID'])
     resp = json.loads(rq.read().decode())
-    if resp['merkleroot'] != x(merkle_root_le).decode():
+    if resp[APIJSONMERKLE] != x(merkle_root_le).decode():
         print('Associated proof transaction failed to be demonstrated in the '
             + 'mentioned block ID: %s' % proof['blockID'])
         sys.exit(1)
-    print('OK')
+    sec_since_epoch = resp[APIJSONTIME]
+    print('File proved to exist on %s' % (time.ctime(sec_since_epoch)))
     
