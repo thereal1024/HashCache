@@ -61,10 +61,15 @@ with open(sys.argv[2], 'r') as proof_file:
     block_path = proof['blockMerklePath']
     merkle_root_be = pathwalk(whash, block_path)
     merkle_root_le = r(merkle_root_be)
-    rq = urllib.request.urlopen(APILOC % proof['blockID'])
-    resp = json.loads(rq.read().decode())
+    try:
+        rq = urllib.request.urlopen(APILOC % proof['blockID'])
+        resp = json.loads(rq.read().decode())
+    except Exception:
+        print('Error: Unable to connect to API to lookup info on block')
+        sys.exit(1)
+
     if resp[APIJSONMERKLE] != x(merkle_root_le).decode():
-        print('Associated proof transaction failed to be demonstrated in the '
+        print('FAIL: Associated proof transaction failed to be demonstrated in the '
             + 'mentioned block ID: %s' % proof['blockID'])
         sys.exit(1)
     sec_since_epoch = resp[APIJSONTIME]
