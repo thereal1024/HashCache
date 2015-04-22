@@ -1,1 +1,179 @@
-test static
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Hash Cache</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+          <li class="sidebar-brand">
+            <a href="#">
+            Hash Cache
+            </a>
+          </li>
+          <li>
+            <a href="#" id="insert-toggle">Insert</a>
+          </li>
+          <li>
+            <a href="#" id="search-toggle">Search</a>
+          </li>
+          <li>
+            <a href="#" id="about-toggle">About</a>
+          </li>
+          <li>
+            <a href="#" id="proof-toggle">Proof</a>
+          </li>
+        </ul>
+      </div>
+      <div id="page-content-wrapper">
+        <div class="container-fluid" id="insert">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>Insert</h1>
+              <article>
+                <div id="holder">
+                </div>
+                <p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+                <p id="filereader">File API & FileReader API not supported</p>
+                <p id="formdata">XHR2's FormData is not supported</p>
+                <p id="progress">XHR2's upload progress isn't supported</p>
+                <p hidden>Progress: <progress id="uploadprogress " min="0" max="100" value="0">0</progress></p>
+              </article>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <h2>
+                Result
+              </h2>
+              <table class="table" id="insert-result">
+                <tbody>
+                  <tr>
+                    <th>State</th>
+                    <th>Hash</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid" id="search">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>Search</h1>
+              <article>
+                <div id="holder2">
+                </div>
+                <p id="upload2" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+                <p id="filereader2">File API & FileReader API not supported</p>
+                <p id="formdata2">XHR2's FormData is not supported</p>
+                <p id="progress2">XHR2's upload progress isn't supported</p>
+                <p hidden>Progress: <progress id="uploadprogress2" min="0" max="100" value="0">0</progress></p>
+              </article>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <h2>
+                Result
+              </h2>
+              <table class="table" id="search-result">
+                <tbody>
+                  <tr>
+                    <th>Connection</th>
+                    <th>Info</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid" id="about">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>About</h1>
+                      <div id="main-content" class="wiki-content">
+                      <h2></h2>              
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="proof"> 
+          <h3>Generate a proof tree</h3>
+          <div class="form-group">
+            <label for="inputInstructions">Insert Existing SHA256 hash to generate merkle tree</label>
+            <input type="text" class="form-control" id="hashInput" placeholder="sha256 hash">
+          </div>
+          <input type="submit" name="submitHash" id="submitHash" class="btn btn-default"></input>
+        </div>
+        
+        <div id="proof-postHash">
+        </div>
+
+      </div>
+    </div>
+    <script src="js/jquery.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $("#submitHash").click(function(e){
+            e.preventDefault();
+          $.ajax({type: "POST",
+                url: "localhost:8000/api/proof/",
+                data: { hash: $("#hashInput").val()},
+            success:function(result){
+              $("#proof").html(result);
+            }});
+        });
+      });
+
+
+      function processInsert(file) { 
+      // This function is called when a file is dropped into the insert drop box.
+      // If you want to put stuff outside the table it'll probably be in <div id="holder">.
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var text = e.target.result;
+            var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
+              $.post("http://hashcache.provebit.org/api/hashes",
+              {
+                hash: ''+hash
+              },
+                function(data, status){
+                var time = new Date().getTime();
+                var state = "Success";
+                var wall = '<tr><td>' + data + '</td><td>' + hash + '</td><td>' + time + '</td></tr>';
+                $('#insert-result > tbody:last').append(wall); // This appends to the table.
+              });
+          }
+          reader.readAsText(file);
+      }
+      function processSearch(file) { 
+      // This function is called when a file is dropped into the search drop box.
+      // If you want to put stuff outside the table it'll probably be in <div id="holder2">.
+        var reader = new FileReader();
+          reader.onload = function(e) {
+            var text = e.target.result;
+            var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
+              $.get("http://hashcache.provebit.org/api/hashes/"+hash,
+                function(data, status){
+                var state = "OK";
+                var wall = '<tr><td>' + state + '</td><td>' + data + '</td></tr>';
+                $('#search-result > tbody:last').append(wall); // This appends to the table.
+              });
+          }
+          reader.readAsText(file);
+      }
+    </script>
+    <script src="js/process.js"></script>
+  </body>
+</html>
