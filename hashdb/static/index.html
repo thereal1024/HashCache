@@ -144,7 +144,7 @@
           reader.onload = function(e) {
             var text = e.target.result;
             var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
-              $.post("api/hashes/",
+              var rq = $.post("api/hashes",
               {
                 hash: ''+hash
               },
