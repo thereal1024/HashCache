@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Hash Cache</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+          <li class="sidebar-brand">
+            <a href="#">
+            Hash Cache
+            </a>
+          </li>
+          <li>
+            <a href="#" id="insert-toggle">Insert</a>
+          </li>
+          <li>
+            <a href="#" id="search-toggle">Search</a>
+          </li>
+          <li>
+            <a href="#" id="about-toggle">About</a>
+          </li>
+        </ul>
+      </div>
+      <div id="page-content-wrapper">
+        <div class="container-fluid" id="insert">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>Insert</h1>
+              <article>
+                <div id="holder">
+                </div>
+                <p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+                <p id="filereader">File API & FileReader API not supported</p>
+                <p id="formdata">XHR2's FormData is not supported</p>
+                <p id="progress">XHR2's upload progress isn't supported</p>
+                <p hidden>Progress: <progress id="uploadprogress " min="0" max="100" value="0">0</progress></p>
+              </article>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <h2>
+                Result
+              </h2>
+              <table class="table" id="insert-result">
+                <tbody>
+                  <tr>
+                    <th>State</th>
+                    <th>Hash</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid" id="search">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>Search</h1>
+              <article>
+                <div id="holder2">
+                </div>
+                <p id="upload2" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+                <p id="filereader2">File API & FileReader API not supported</p>
+                <p id="formdata2">XHR2's FormData is not supported</p>
+                <p id="progress2">XHR2's upload progress isn't supported</p>
+                <p hidden>Progress: <progress id="uploadprogress2" min="0" max="100" value="0">0</progress></p>
+              </article>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <h2>
+                Result
+              </h2>
+              <table class="table" id="search-result">
+                <tbody>
+                  <tr>
+                    <th>Connection</th>
+                    <th>Info</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid" id="about">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>About</h1>
+                      <div id="main-content" class="wiki-content">
+                      <h2></h2>              
+        <h3 id="HashCacheProjectDescription-Description"><span>Description</span></h3><p>Our files have creation times and modification times, but they can be corrupted or even tampered with by a utility program. Thus, we should not place high trust in them as proof that a student completed their homework on time, or as evidence in court. HashCache is an web service that certifies file timestamps cheaply.</p><h3 id="HashCacheProjectDescription-Usefulness">Usefulness</h3><p><span style="color: rgb(0,0,0);">Files saved in most file systems receive a timestamp which is supplied by the operating system reading the computer’s internal clock. For the purpose of providing evidence, the credibility of such a timestamp is dubious, especially when the person supplying one has technical skill. The file’s timestamp may be manipulated by adjusting the computer’s clock or by overwriting the metadata in the filesystem, which may be done by utility software. If one does not host the file, they must still trust a the third party host kept correct records. Thus, we should not place great trust in file timestamps kept in this way. Specifically, the problem is that the data representing the timestamp is under some user’s full control. Our project team will build a web-based solution to this problem using the decentralized Bitcoin network.</span></p><p>Potential applications of this type of secure timestamping technique include, but are not limited to:</p><ul><li>One can demonstrate they were the original creator of an infringed work, such as a book, by providing the earliest proved creation time of that work. Even if there are differences between the original and copy, a person can decide what is valid to compare and then check the dates.</li><li>One can demonstrate the state of some property such as an apartment at a certain time (or earlier) by taking photos or a video of it then certifying their creation time. Note that photos can be grouped into one compressed file to reduce the certifications required from many to one. Note that the photos’ integrity from doctoring is a still moderately concerning separate problem. Fortunately, it is less likely that a video will be fraudulently edited effectively.</li><li>One can make a prediction in a text file and show they were right (or wrong) without revealing the text before the event/deadline time because they originally submitted the existence of a hash that does not feasibly reverse to the original text.</li></ul><p>There are existing websites that provide a similar service, but HashCache will uniquely employ a cryptographic hash construction to deliver a cheaper and more efficient service.</p><p><strong>Existing Services</strong></p><p>The following two websites are the earliest and least sophisticated. They represent the hash value as newly created and inaccessible Bitcoin &quot;accounts&quot;, which is inefficient and is considered by many as abuse of the network:</p><ul><li><a class="external-link" href="http://vog.github.io/bitcoinproof/" rel="nofollow">http://vog.github.io/bitcoinproof/</a></li><li><a class="external-link" href="https://www.btproof.com/" rel="nofollow">https://www.btproof.com/</a></li></ul><p>This website represents file hashes as Bitcoin amounts being sent, which is also rather space inefficient and &quot;abuse&quot;:</p><ul><li><a class="external-link" href="http://virtual-notary.org/" rel="nofollow">http://virtual-notary.org/</a></li></ul><p>This website is actually popular and has no &quot;abuse&quot; issue. However, it still does not use our efficient Merkle tree method. Major downside, it costs about $1 per document:</p><ul><li><a class="external-link" href="http://proofofexistence.com/" rel="nofollow">http://proofofexistence.com/</a></li></ul><h3 id="HashCacheProjectDescription-Realness">Realness</h3><p>The &quot;real&quot; data stored in our site must come from legitimate users who want to prove they created their file at a certain time. For testing and demoing, we may prove personal files, or draw from a media database such as Project Gutenberg. Perhaps we can invite other students to use our site near the end. After the end of the project, we hope to have to have the site running for anyone on the Internet.</p><h3 id="HashCacheProjectDescription-Functionality">Functionality</h3><p>HashCache will provide a web based service to collect file hash submissions from anyone. To demonstrate a proven timestamp, It is enough to register just the hash of the file. Collecting hashes also better protects privacy. On the UX end, it will still be possible to select or drop in a file, and have the page calculate the hash client side before sending it to the server.</p><p>HashCache will uniquely employ a <a href="http://en.wikipedia.org/wiki/Merkle_tree" class="external-link" rel="nofollow">Merkle tree</a> contruction to increase efficiency and lower the amount of Bitcoin transactions made. (Since transactions cost a few cents each. Note: To avoid spending a lot money, we can develop and test on Bitcoin Testnet, where it does not cost to create transactions.)</p><p>We will have document collection windows lasting 3-5 minutes. Then we will derive one root hash from all of the documents added, and put that in a Bitcoin transaction. To the user, this means that we don't have to charge $1 per document like Proof Of Existence. Instead, we will be able to provide a free, or nearly free service. The technique would result in a maximum of about $10 of Bitcoin transactions per day.</p><p><strong>Basic Functions</strong></p><ul><li>User can submit a file to certify (Insert query)</li><li>User can submit a file to check it's certified time (or whether it has been submitted to us at all) (Search query, should involve multiple joins or steps)</li><li>User can request their submitted file hash to be removed (delete query)</li><li>User can use a REST API for certification and checking</li><li>User can view recent submitted file hashes and their time (Simple search query)</li><li>Backend<ul><li>Bitcoin interface will perform add and update queries on the Bitcoin transaction records</li></ul></li></ul><p><strong>Advanced Features</strong></p><ul><li>When the user sees that a file was certified for a certain time, they can open a nice visualization of the Merkle tree path for that file (option to understand the inner workings better)</li><li>User can download a certification file<ul><li>The file can be run through a special program (which we provide/create) that verifies the certified time independently from our service</li></ul></li></ul><p> </p>
+        </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/jquery.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
+    <script>
+      function processInsert(file) { 
+      // This function is called when a file is dropped into the insert drop box.
+      // If you want to put stuff outside the table it'll probably be in <div id="holder">.
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var text = e.target.result;
+            var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
+              $.post("http://hashcache.provebit.org/api/hashes",
+              {
+                hash: ''+hash
+              },
+                function(data, status){
+                var time = new Date().getTime();
+                var state = "Success";
+                var wall = '<tr><td>' + data + '</td><td>' + hash + '</td><td>' + time + '</td></tr>';
+                $('#insert-result > tbody:last').append(wall); // This appends to the table.
+              });
+          }
+          reader.readAsText(file);
+      }
+      function processSearch(file) { 
+      // This function is called when a file is dropped into the search drop box.
+      // If you want to put stuff outside the table it'll probably be in <div id="holder2">.
+        var reader = new FileReader();
+          reader.onload = function(e) {
+            var text = e.target.result;
+            var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
+              $.get("http://hashcache.provebit.org/api/hashes/"+hash,
+                function(data, status){
+                var state = "OK";
+                var wall = '<tr><td>' + state + '</td><td>' + data + '</td></tr>';
+                $('#search-result > tbody:last').append(wall); // This appends to the table.
+              });
+          }
+          reader.readAsText(file);
+      }
+    </script>
+    <script src="js/process.js"></script>
+  </body>
+</html>
