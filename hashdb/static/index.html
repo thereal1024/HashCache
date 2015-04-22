@@ -107,22 +107,47 @@
           </div>
         </div>
         <div id="proof"> 
-          <h3>Generate a proof tree</h3>
-          <div class="form-group">
+          
+          <div class="form-group" id="hashForm">
+            <h3>Generate a proof tree</h3>
             <label for="inputInstructions">Insert Existing SHA256 hash to generate merkle tree</label>
             <input type="text" class="form-control" id="hashInput" placeholder="sha256 hash">
+            <input type="submit" name="submitHash" id="submitHash" class="btn btn-default"></input>
           </div>
-          <input type="submit" name="submitHash" id="submitHash" class="btn btn-default"></input>
+          <div id="postHash">
+            <h2>Proof Tree</h2>
+              <button type="button" class="btn btn-default" onclick="clearGraph()"> Query new merkle path</button>
+              <div class="panel panel-primary">
+                <div id="graphImage">
+                </div>
+                <div id="selection">
+                </div>
+                <div class="panel-heading">
+                  Hash Check:
+                </div>
+                <br />
+                <div class="form-group">
+                  <label for="email">Left Hash</label>
+                  <input type="text" class="form-control" name="lefthash" id="lefthash">
+                </div>
+                <div class="form-group">
+                  <label for="pwd">Right Hash</label>
+                  <input type="text" class="form-control" name="righthash" id="righthash">
+                </div>
+                
+                <button type="submit" class="btn btn-default" onclick="hashValues()">Calculate Concatenated Hash</button>
+                
+              </div>
+              <div id="answer">
+              </div>
+          </div>
         </div>
-        
-        <div id="proof-postHash">
-        </div>
-
       </div>
     </div>
     <script src="js/jquery.js"></script>
     <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js"></script>
     <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
+    <script src="js/vis.js"></script>
     <script>
       $(document).ready(function(){
         $("#submitHash").click(function(e){
@@ -131,11 +156,16 @@
                 url: "api/proof/" + $("#hashInput").val(),
                 data: { },
             success:function(result){
-              $("#proof").html(result);
+              $("#proof").html(draw(result));
             }});
         });
       });
 
+      function clearGraph(){
+        $("#postHash").hide()
+        $('#hashForm').show()
+        $('#hashInput').val('')
+      }
 
       function processInsert(file) { 
       // This function is called when a file is dropped into the insert drop box.
@@ -175,5 +205,6 @@
       }
     </script>
     <script src="js/process.js"></script>
+    <script src="js/visualizer.js"></script>
   </body>
 </html>

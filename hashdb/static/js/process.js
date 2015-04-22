@@ -13,12 +13,14 @@
           $("#insert").show();
           $("#about").hide();
           $("#search").hide();
+           $("#proof").hide();
       });
       $("#search-toggle").click(function(e) {
           e.preventDefault();
           $("#search").show();
           $("#about").hide();
           $("#insert").hide();
+          $("#proof").hide();
       });
       $("#proof-toggle").click(function(e) {
           e.preventDefault();
@@ -26,6 +28,7 @@
           $("#proof").show();
           $("#about").hide();
           $("#insert").hide();
+          $("#postHash").hide();
       });
 
       //$.get("api/window/open", function(data, status){
