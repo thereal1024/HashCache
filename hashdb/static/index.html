@@ -127,9 +127,9 @@
       $(document).ready(function(){
         $("#submitHash").click(function(e){
             e.preventDefault();
-          $.ajax({type: "POST",
-                url: "localhost:8000/api/proof/",
-                data: { hash: $("#hashInput").val()},
+          $.ajax({type: "GET",
+                url: "api/proof/" + $("#hashInput").val(),
+                data: { },
             success:function(result){
               $("#proof").html(result);
             }});
@@ -144,7 +144,7 @@
           reader.onload = function(e) {
             var text = e.target.result;
             var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
-              $.post("http://hashcache.provebit.org/api/hashes",
+              $.post("api/hashes/",
               {
                 hash: ''+hash
               },
@@ -164,7 +164,7 @@
           reader.onload = function(e) {
             var text = e.target.result;
             var hash = CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
-              $.get("http://hashcache.provebit.org/api/hashes/"+hash,
+              $.get("api/hashes/"+hash,
                 function(data, status){
                 var state = "OK";
                 var wall = '<tr><td>' + state + '</td><td>' + data + '</td></tr>';

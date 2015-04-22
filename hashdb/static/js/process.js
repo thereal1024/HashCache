@@ -28,8 +28,8 @@
           $("#insert").hide();
       });
 
-      $.get("http://hashcache.provebit.org/api/window/open", function(data, status){
-      });
+      //$.get("api/window/open", function(data, status){
+      //});
       var holder = document.getElementById('holder'),
           tests = {
             filereader: typeof FileReader != 'undefined',
