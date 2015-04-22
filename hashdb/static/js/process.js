@@ -29,6 +29,7 @@
           $("#about").hide();
           $("#insert").hide();
           $("#postHash").hide();
+          $('#hashForm').show()
       });
 
       //$.get("api/window/open", function(data, status){
