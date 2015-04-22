@@ -1,12 +1,14 @@
       $("#about").hide();
       $("#search").hide();
       $("#proof").hide();
+      $("#recent").hide()
       $("#about-toggle").click(function(e) {
           e.preventDefault();
           $("#about").show();
           $("#insert").hide();
           $("#search").hide();
           $("#proof").hide();
+          $("#recent").hide()
       });
       $("#insert-toggle").click(function(e) {
           e.preventDefault();
@@ -14,6 +16,7 @@
           $("#about").hide();
           $("#search").hide();
            $("#proof").hide();
+           $("#recent").hide()
       });
       $("#search-toggle").click(function(e) {
           e.preventDefault();
@@ -21,15 +24,40 @@
           $("#about").hide();
           $("#insert").hide();
           $("#proof").hide();
+          $("#recent").hide()
       });
       $("#proof-toggle").click(function(e) {
           e.preventDefault();
           $("#search").hide();
+          $("#recent").hide()
           $("#proof").show();
           $("#about").hide();
           $("#insert").hide();
           $("#postHash").hide();
           $('#hashForm').show()
+      });
+      $("#recent-toggle").click(function(e){
+          $("#search").hide();
+          $("#about").hide();
+          $("#insert").hide();
+          $("#proof").hide();
+          $("#recent").show()
+          e.preventDefault();
+          $.ajax({type: "GET",
+                url: "api/recent/" ,
+                success:function(result){
+
+                  console.log("here")
+                  var recentList = result.split("\n")
+                  for(var i=0;i<recentList.length;i++){
+                    var recentEntry = recentList[i].split(",")
+                    var row = "<tr><td>" + recentEntry[0] + "</td><td>" + recentEntry[1] + "</td></tr>"
+                    if(i==0){
+                      $('#recent-result > tbody:last').html(row)   
+                    }
+                    $('#recent-result > tbody:last').append(row) 
+                  }
+                }});
       });
 
       //$.get("api/window/open", function(data, status){

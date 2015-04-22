@@ -14,6 +14,20 @@ def index(request):
 def proof_tree(request,proofHash):
     resp = '{ "prooftree": [ { "pathNode": "9072e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "null", "childDirection": "null" }, { "pathNode": "e482a5825985cc853e403cb580bd671c68ed311d27e736ae962d6a6edaf4e7f2", "childNode": "2f3caffd6aeec967a7d71eb7abec0993d036430691e668a8710248df4541111e", "childDirection": "right" }, { "pathNode": "32j1e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "29d2d18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "20a2e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "baeed18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" }, { "pathNode": "bbace5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "828dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "9112e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "bf9dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" } ] }'
     return PlainResponse(resp)
+
+
+def recent_hashes(request):
+    resp = ''
+    with connection.cursor() as c:
+        c.execute("SELECT hex(hash), uploadTime FROM SubmittedHashes order by uploadTime desc limit 10;")
+        rows = c.fetchall()
+        for row in rows:
+            resp = resp+row[0] + "," + str(row[1]) + "\n"
+    #Remove railing new line
+    resp = resp[:-1]
+    return PlainResponse(resp)
+
+
 def open_window(request):
     resp = 'error'
     with connection.cursor() as c:
