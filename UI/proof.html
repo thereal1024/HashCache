@@ -1,0 +1,269 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Network | Hierarchical Layout, userDefined</title>
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <style type="text/css">
+    body {
+      font: 10pt sans;
+    }
+    #mynetwork {
+      width: 600px;
+      height: 600px;
+      border: 1px solid lightgray;
+    }
+  </style>
+
+  <script type="text/javascript" src="js/vis.js"></script>
+
+  <script type="text/javascript" src="js/jssha256.js"></script>
+  <script type="text/javascript">
+    var example = 
+    {
+    "prooftree": 
+        [
+          {
+              "pathNode": "9072e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+              "childNode": "null",
+              "childDirection": "null"
+          },
+          {
+              "pathNode": "e482a5825985cc853e403cb580bd671c68ed311d27e736ae962d6a6edaf4e7f2",
+              "childNode": "2f3caffd6aeec967a7d71eb7abec0993d036430691e668a8710248df4541111e",
+              "childDirection": "right"
+          },
+          {
+              "pathNode": "382j1e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+              "childNode": "29d2d18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+              "childDirection": "right"
+          },
+          {
+              "pathNode": "20a2e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+              "childNode": "baeed18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+              "childDirection": "left"
+          },
+          {
+              "pathNode": "bbace5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+              "childNode": "828dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+              "childDirection": "right"
+          },
+          {
+              "pathNode": "91112e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+              "childNode": "bf9dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+              "childDirection": "left"
+          }
+        ]
+    };
+    var proof = example["prooftree"];
+    nodeList = [];
+    edges = [];
+    console.log("hey!" + proof.length);
+    var levels = proof.length-1;
+    var prev = null;
+    for(var i = 0; i<proof.length;i++){
+      var nodes = proof[i];
+      var splitLabel = split_sha_string(nodes["pathNode"]);
+      nodeList.push({
+        id: String(i),
+        label: splitLabel,
+        level: levels-i
+      })
+      if(nodes["childNode"]!="null"){
+        var splitLabelChild = split_sha_string(nodes["childNode"]);
+        if(nodes["childDirection"]=="left"){
+          splitLabelChild = splitLabelChild + "\n1";
+        } else splitLabelChild = splitLabelChild + "\n2";
+        nodeList.push({
+          id: "child"+String(i),
+          label: splitLabelChild,
+          level: levels-i+1
+        })
+        edges.push({
+          from: String(i),
+          to: "child"+String(i)
+        })
+      }
+      if(prev!=null){
+        edges.push({
+          from: String(i),
+          to: prev
+        })
+      }
+      prev = String(i)
+    }
+    var nodes = null;
+    var edges = null;
+    var network = null;
+    var directionInput = document.getElementById("direction");
+
+    function destroy() {
+        if (network !== null) {
+            network.destroy();
+            network = null;
+        }
+    }
+
+    function split_sha_string(str) {
+      var result = '';
+      while (str.length > 0) {
+        result += str.substring(0, 16) + '\n';
+        str = str.substring(16);
+      }
+      return result;
+    }
+
+    function draw() {
+      destroy();
+      var example = 
+   {
+    "prooftree": [
+        {
+            "pathNode": "9072e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+            "childNode": "null",
+            "childDirection": "null"
+        },
+        {
+            "pathNode": "e482a5825985cc853e403cb580bd671c68ed311d27e736ae962d6a6edaf4e7f2",
+            "childNode": "2f3caffd6aeec967a7d71eb7abec0993d036430691e668a8710248df4541111e",
+            "childDirection": "right"
+        },
+        {
+            "pathNode": "32j1e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+            "childNode": "29d2d18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+            "childDirection": "right"
+        },
+        {
+            "pathNode": "20a2e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+            "childNode": "baeed18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+            "childDirection": "left"
+        },
+        {
+            "pathNode": "bbace5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+            "childNode": "828dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+            "childDirection": "right"
+        },
+        {
+            "pathNode": "9112e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4",
+            "childNode": "bf9dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1",
+            "childDirection": "left"
+        }
+    ]
+  };
+
+    var proof = example["prooftree"];
+    nodeList = [];
+    edges = [];
+    var levels = proof.length-1;
+    var prev = null;
+    for(var i = 0; i<proof.length;i++){
+      var nodes = proof[i];
+      var nodeHash = nodes["pathNode"]
+      var childHash = nodes["childNode"]
+      var splitLabel = split_sha_string(nodeHash);
+      nodeList.push({
+        id: nodeHash,
+        label: "PathNode" + String(i),
+        level: levels-i
+      })
+      if(childHash!="null"){
+        var splitLabelChild = split_sha_string(childHash);
+        // if(nodes["childDirection"]=="left"){
+        //   splitLabelChild = splitLabelChild + "\n1";
+        // } else splitLabelChild = splitLabelChild + "\n2";
+        nodeList.push({
+          id: childHash,
+          label: "SiblingNode "+ String(i-1),
+          level: levels-i+1
+        });
+        if(nodes["childDirection"]=="right"){
+          edges.push({
+            from: nodeHash,
+            to: prev
+          });
+          edges.push({
+            from: nodeHash,
+            to: childHash
+          });  
+        }
+        else{
+          edges.push({
+            from: nodeHash,
+            to: childHash
+          });
+          edges.push({
+            from: nodeHash,
+            to: prev
+          });  
+        }
+        
+      }
+      prev = nodeHash;
+    }
+      nodeList[0]["label"] = "Leaf Node"
+      nodeList[nodeList.length-2]["label"] = "Merkle Root"
+      // create a network
+      var container = document.getElementById('mynetwork');
+      var data = {
+        nodes: nodeList,
+        edges: edges
+      };
+
+      var options = {
+        hierarchicalLayout: {
+            direction: "UD"
+        },
+        nodes: {
+            radiusMax:10,
+            fontSize:16
+        }
+      };
+      network = new vis.Network(container, data, options);
+
+      // add event listeners
+      network.on('select', function(params) {
+        document.getElementById('selection').innerHTML = '<b>Hash Value: </b>' + params.nodes;
+      });
+    }
+
+    function hashValues(){
+      var leftHash = document.getElementById("lefthash").value 
+      var rightHash = document.getElementById("righthash").value
+      var concatHash = SHA256_hash(leftHash + rightHash)
+      document.getElementById('Answer').innerHTML = "<div class='form-group'><b>Concatenated Hash :</b> " + concatHash + "<br /></div>"
+      console.log(concatHash)
+    }
+  </script>
+</head>
+
+<body onload="draw();">
+<h2>Proof Tree</h2>
+
+
+<div id="mynetwork"></div>
+<br />
+
+<p id="selection">
+</p>
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    Hash Check:
+  </div>
+  <br />
+  <div class="form-group">
+    <label for="email">Left Hash</label>
+    <input type="text" class="form-control" name="lefthash" id="lefthash">
+  </div>
+  <div class="form-group">
+    <label for="pwd">Right Hash</label>
+    <input type="text" class="form-control" name="righthash" id="righthash">
+  </div>
+  <div id="Answer">
+  </div>
+  <button type="submit" class="btn btn-default" onclick="hashValues()">Calculate Concatenated Hash</button>
+  
+</div>
+</body>
+</html>

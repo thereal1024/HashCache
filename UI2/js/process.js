@@ -1,12 +1,14 @@
       $("#about").hide();
       $("#search").hide();
+      $("#proof").hide();
       $("#about-toggle").click(function(e) {
           e.preventDefault();
           $("#about").show();
           $("#insert").hide();
           $("#search").hide();
+          $("#proof").hide();
       });
-          $("#insert-toggle").click(function(e) {
+      $("#insert-toggle").click(function(e) {
           e.preventDefault();
           $("#insert").show();
           $("#about").hide();
@@ -18,6 +20,14 @@
           $("#about").hide();
           $("#insert").hide();
       });
+      $("#proof-toggle").click(function(e) {
+          e.preventDefault();
+          $("#search").hide();
+          $("#proof").show();
+          $("#about").hide();
+          $("#insert").hide();
+      });
+
       $.get("http://hashcache.provebit.org/api/window/open", function(data, status){
       });
       var holder = document.getElementById('holder'),
