@@ -55,7 +55,7 @@
                     if(i==0){
                       $('#recent-result > tbody:last').html(row)   
                     }
-                    $('#recent-result > tbody:last').append(row) 
+                    else $('#recent-result > tbody:last').append(row) 
                   }
                 }});
       });
