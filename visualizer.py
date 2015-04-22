@@ -1,7 +1,7 @@
 """
-Visualizer that takes in a prooftree json format 
-and produces a png file visual representation 
-of the associated proof tree. 
+Visualizer that takes in a prooftree json format
+and produces a png file visual representation
+of the associated proof tree.
 
 Usage: python visualizer.py data.json
 
@@ -23,7 +23,7 @@ import sys
 def import_json(fileName):
     with open(fileName) as proof_tree:
         proof = json.load(proof_tree)
-    return proof 
+    return proof
 
 def split_sha_string(sha):
     return re.sub("(.{16})","\\1\n",sha,0,re.DOTALL)
