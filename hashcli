@@ -3,7 +3,12 @@ import hashlib
 import sys
 import urllib2
 import urllib
-server = 'http://hashcache.provebit.org/'
+import os
+if os.environ.get('LOCALTEST'):
+    server = 'http://localhost:8000/'
+else: 
+    server = 'http://hashcache.provebit.org/'
+
 def print_help():
     """ Print usage instructions for the command-line library. """
     print("Usage: ./hashcache [command]")
