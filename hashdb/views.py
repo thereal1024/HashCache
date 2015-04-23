@@ -12,8 +12,57 @@ def index(request):
     return PlainResponse("Hello world. This is HashCache. Served by Python Django.")
 
 def proof_tree(request,proofHash):
-    resp = '{ "prooftree": [ { "pathNode": "9072e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "null", "childDirection": "null" }, { "pathNode": "e482a5825985cc853e403cb580bd671c68ed311d27e736ae962d6a6edaf4e7f2", "childNode": "2f3caffd6aeec967a7d71eb7abec0993d036430691e668a8710248df4541111e", "childDirection": "right" }, { "pathNode": "32j1e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "29d2d18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "20a2e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "baeed18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" }, { "pathNode": "bbace5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "828dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "9112e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "bf9dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" } ] }'
-    return PlainResponse(resp)
+    print(proofHash)
+    response = '{ "prooftree": [ {'
+    inputNodeId = None
+    with connection.cursor() as c:
+        c.execute("SELECT nodeID FROM NodeHash WHERE hex(hash)=%s", [proofHash])
+        inputNodeId = c.fetchone()[0]
+        response += '"pathNode": "' + proofHash + '" , "childNode": "null", "childDirection": "null" },{'
+        print("inputi2D: " + str(inputNodeId))
+    prevNode = inputNodeId
+    finished = False
+    while not finished:
+        # Find ParentId
+        print("hello")
+        parentId = None
+        with connection.cursor() as g:
+            g.execute("SELECT parentID FROM Paternal WHERE nodeID=%s",[prevNode])
+            parentId = g.fetchone()
+            if parentId == None:
+                print("none parent id")
+                finished = True
+                break
+            else:
+                parentId = parentId[0]
+            childDirection = "right"
+            g.execute("SELECT leftID FROM Siblings WHERE rightID=%s",[prevNode])
+            siblingId = g.fetchone()
+            if siblingId is None:
+                g.execute("SELECT rightID FROM Siblings WHERE leftID=%s", [prevNode])
+                siblingId = g.fetchone()
+                if siblingId is None:
+                    print("Everything's broken")
+                else:
+                    siblingId = siblingId[0]
+                print("new sibling id" + str(siblingId))
+                if(siblingId is None):
+                    finished = True
+                    break
+            else:
+                siblingId = siblingId[0]
+                childDirection = "left"
+            g.execute("SELECT hex(hash) FROM NodeHash WHERE nodeID=%s",[parentId])
+            parentHash = g.fetchone()[0]
+            g.execute("SELECT hex(hash) FROM NodeHash WHERE nodeID=%s",[prevNode])
+            prevHash = g.fetchone()[0]
+            g.execute("SELECT hex(hash) FROM NodeHash WHERE nodeID=%s",[siblingId])
+            siblingHash = g.fetchone()[0]
+        prevNode = parentId
+        response += '"pathNode": "' + parentHash + '" , "childNode": "'+ siblingHash + '", "childDirection": "' + childDirection + '" },{'
+    response = response[:-2] + "]}"
+    print("response: " + response)
+    return PlainResponse(response)
 
 
 def recent_hashes(request):
