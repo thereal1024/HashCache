@@ -34,7 +34,7 @@ function draw(proofFile) {
       label: "PathNode" + String(i),
       level: levels-i
     })
-    if(childHash!="null"){
+    if(childHash!=null){
       nodeList.push({
         id: childHash,
         label: "SiblingNode "+ String(i-1),
