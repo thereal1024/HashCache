@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.db import connection
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 import binascii
+import json
 
 PlainResponse = lambda s: HttpResponse(s, content_type="text/plain")
 
@@ -11,18 +12,13 @@ PlainResponse = lambda s: HttpResponse(s, content_type="text/plain")
 def index(request):
     return PlainResponse("Hello world. This is HashCache. Served by Python Django.")
 
-def proof_tree(request,proofHash):
-    resp = '{ "prooftree": [ { "pathNode": "9072e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "null", "childDirection": "null" }, { "pathNode": "e482a5825985cc853e403cb580bd671c68ed311d27e736ae962d6a6edaf4e7f2", "childNode": "2f3caffd6aeec967a7d71eb7abec0993d036430691e668a8710248df4541111e", "childDirection": "right" }, { "pathNode": "32j1e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "29d2d18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "20a2e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "baeed18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" }, { "pathNode": "bbace5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "828dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "9112e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "bf9dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" } ] }'
-    return PlainResponse(resp)
-
-
 def recent_hashes(request):
     resp = ''
     with connection.cursor() as c:
         c.execute("SELECT hex(hash), uploadTime FROM SubmittedHashes order by uploadTime desc limit 10;")
         rows = c.fetchall()
         for row in rows:
-            resp = resp+row[0] + "," + str(row[1]) + "\n"
+            resp = resp+row[0].lower() + "," + str(row[1]) + "\n"
     #Remove railing new line
     resp = resp[:-1]
     return PlainResponse(resp)
@@ -71,31 +67,77 @@ def submit_hash(request):
             resp = 'error: hash already submitted'
     return PlainResponse(resp)
 
-def hash_info(request, hashhex):
-    resp = 'error'
+def lookup_path(hashhex):
+    submitted, complete = False, False
     with connection.cursor() as c:
         c.execute('SELECT min(nodeID) FROM NodeHash WHERE hash = unhex(%s) '
                 'AND treeLevel=0', [hashhex])
         hid = c.fetchone()[0]
         if not hid:
-            return PlainResponse('error: hash not submitted')
-        c.execute('SELECT endTime IS NOT NULL from NodeHash, Window '
+            return False, False, None, [], None, None
+
+        submitted = True
+        
+        c.execute('SELECT endTime IS NOT NULL, NodeHash.windowID from NodeHash, Window '
                 'WHERE nodeId=%s and NodeHash.windowID=Window.windowID', [hid])
         row = c.fetchone()
         completedwindow = (row[0] == 1)
+        window = row[1]
 
         c.execute('SELECT uploadTime FROM SubmittedHashes WHERE hash=unhex(%s)', [hashhex])
         uploadTime = c.fetchone()[0]
 
-        resp =  'hash: %s\n' % hashhex
-        resp += 'added: %s\n' % uploadTime
+        if completedwindow:
+            c.execute('call merklepath(%s)', [hashhex])
+            path = c.fetchall()
+            
+            c.execute('SELECT hex(NodeHash.hash) FROM MerkleRoot, NodeHash '
+                'WHERE NodeHash.nodeID = MerkleRoot.nodeID '
+                'AND NodeHash.windowID = %s', [window])
+            merkleroot = c.fetchone()[0]
+            
+            complete = True
+    return submitted, complete, uploadTime, path, window, merkleroot
 
-        if not completedwindow:
-            resp +='\ncontained window not completed'
-            return PlainResponse(resp)
-
-        c.execute('call merklepath(%s)', [hashhex])
-        rows = c.fetchall()
-        resp += '\nmerkle path:\n' + '\n'.join([','.join(row) for row in rows])
-
+def hash_info(request, hashhex):
+    hashhex = hashhex.lower()
+    submitted, complete, uploadTime, path, window, merkleroot = lookup_path(hashhex)
+    
+    if not submitted:
+        return PlainResponse('error: hash not submitted')
+    
+    resp =  'hash: %s\n' % hashhex
+    resp += 'added: %s\n' % uploadTime
+    resp += 'window: %s\n' % window
+    
+    if not complete: 
+        resp +='\ncontained window not completed'
         return PlainResponse(resp)
+        
+    resp += '\nmerkle path:\n' + '\n'.join([(row[1].lower() + ',' + row[2]) for row in path])
+    return PlainResponse(resp)
+    
+def proof_tree(request,hashhex):
+    hashhex = hashhex.lower()
+    submitted, complete, uploadTime, path, window, merkleroot = lookup_path(hashhex)
+    
+    if submitted and complete:        
+        nodes, siblings, sides = zip(*path)
+        nodes = tuple(map(str.lower, nodes)) + (merkleroot.lower(),)
+        children = (None,) + tuple(map(str.lower, siblings))
+        sides = (None,) + sides
+        
+        entries = []
+        for node, child, side in zip(nodes, children, sides):
+            entries.append({
+                'pathNode': node, 
+                'childNode': child, 
+                'childDirection': side,
+            })
+        
+        resp = json.dumps({'prooftree': entries})
+        return PlainResponse(resp)
+        
+    #resp = '{ "prooftree": [ { "pathNode": "9072e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "null", "childDirection": "null" }, { "pathNode": "e482a5825985cc853e403cb580bd671c68ed311d27e736ae962d6a6edaf4e7f2", "childNode": "2f3caffd6aeec967a7d71eb7abec0993d036430691e668a8710248df4541111e", "childDirection": "right" }, { "pathNode": "32j1e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "29d2d18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "20a2e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "baeed18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" }, { "pathNode": "bbace5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "828dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "right" }, { "pathNode": "9112e5c2ef9e2a21806fc8bb766b1a1da9dd18be0dd64d8e9da68dcc2e4574a4", "childNode": "bf9dd18be0dd64d8e9da68dcc2e4574a49072e5c2ef9e2a21806fc8bb766b1a1", "childDirection": "left" } ] }'
+    raise Http404('hash does not exist')
+    #return PlainResponse(resp)

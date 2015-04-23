@@ -165,11 +165,11 @@ BEGIN
 	-- will return emptyset if hash not in COMPLETED tree
 	SET @TARGET = (SELECT min(nodeID) FROM NodeHash WHERE hash = unhex(hashhex));
 
-	select hex(hash) as 'sibling', V.side from NodeHash,
+	select hex(N.hash) as 'node', hex(S.hash) as 'sibling', V.side from NodeHash as N, NodeHash as S,
 	(select 'left' as side union select 'right' as side) as V
 	where
-	(nodeID,V.side) in (
-		select IF(fwd.other=nodeID,bck.other,fwd.other) as 'comp',
+	(N.nodeID,S.nodeID,V.side) in (
+		select nodeID, IF(fwd.other=nodeID,bck.other,fwd.other) as 'comp',
 		IF(fwd.other=nodeID,'left','right') as 'side' from NodeHash, 
 		(select leftID as 'match', rightID as 'other' from Siblings) as fwd,
 		(select rightID as 'match', leftID as 'other' from Siblings) as bck
@@ -181,8 +181,8 @@ BEGIN
 			join
 			(select @pv:=@TARGET)tmp
 			where nodeID=@pv) as nodeparents)
-		order by comp -- this ordering might not be necessary
-	);
+		
+	) order by N.treeLevel;
 END //
 
 
