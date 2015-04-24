@@ -20,6 +20,8 @@ def print_help():
     print("\tadddocument [document hash]")
     print("\tviewwindow [windowID]")
     print("\tviewdocument [document hash]")
+    print("\tgetproof [document]")
+    print("\tcheckproof [document] [prooffile]")
 
 def print_command_help(command):
     """ Display extended help information for CLI command
@@ -35,6 +37,10 @@ def print_command_help(command):
             "Display all known document hashes for the associated collection window.", \
           "viewdocument": \
             "Display info on document hash.", \
+          "getproof": \
+            "Grab proof for file from server. Only will work if the Bitcoin TX is created.", \
+          "checkproof": \
+            "Validate a proof against a file" \
         }
     if command in COMMANDS:
         print (COMMANDS[command])
@@ -78,6 +84,17 @@ def viewdocument(documentHash):
 	viewResponse = urllib2.urlopen(viewRequest)
 	print(viewResponse.read())  
 
+def getproof(document):
+    dhash = hashlib.sha256(open(document, 'rb').read()).hexdigest()
+    viewRequest = urllib2.Request(server + "api/proof/" + dhash)
+    viewResponse = urllib2.urlopen(viewRequest)
+    prd = open(document + '.dproof', 'w')
+    prd.write(viewResponse.read())
+    prd.close()
+    
+def checkproof(document, prooffile):
+    pass
+
 def process_command(command):
     """ Process a command-line command and execute the 
         resulting FreeJournal action
@@ -117,6 +134,9 @@ def process_command(command):
             viewdocument(sys.argv[2])
         else:
             print_help()
+    elif command == 'getproof':
+        if (len(sys.argv)==3):
+            getproof(sys.argv[2])
     else:
         print_help()
 
