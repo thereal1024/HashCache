@@ -70,8 +70,13 @@ function draw(proofFile) {
 function buildNetwork(nodeList,edges){
   console.log(nodeList);
   console.log(edges);
-  nodeList[0]["label"] = "Leaf Node"
-  nodeList[nodeList.length-2]["label"] = "Merkle Root"
+  if (nodeList.length > 1) {
+    nodeList[0]["label"] = "Leaf Node"
+    nodeList[nodeList.length-2]["label"] = "Merkle Root"
+  }
+  else {
+    nodeList[0]["label"] = "Leaf Node / Merkle Root"
+  }
   // create a network
   var container = document.getElementById('graphImage');
   var data = {
