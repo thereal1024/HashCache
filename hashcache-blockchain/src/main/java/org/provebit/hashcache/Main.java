@@ -1,7 +1,7 @@
 package org.provebit.hashcache;
 
 /**
- * Hello world!
+ * Hashcache TX creator entry point
  *
  */
 public class Main 

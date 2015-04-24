@@ -7,7 +7,8 @@ CREATE TABLE Transaction(
 	confirmations INTEGER,
 	includedBlock BINARY(32),
 	fee BIGINT UNSIGNED, -- in satoshis
-	address CHAR(36),
+    blockpath VARBINARY(990), -- up to 30 levels = 1 billion TX/block
+    rawdata VARBINARY(2000),
 	txtime TIMESTAMP
 );
 
