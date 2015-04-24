@@ -121,8 +121,11 @@ def proof_tree(request,hashhex):
     hashhex = hashhex.lower()
     submitted, complete, uploadTime, path, window, merkleroot = lookup_path(hashhex)
     
-    if submitted and complete:        
-        nodes, siblings, sides = zip(*path)
+    if submitted and complete: 
+        if len(path) > 0:      
+            nodes, siblings, sides = zip(*path)
+        else:
+            nodes, siblings, sides = (),(),()
         nodes = tuple(map(str.lower, nodes)) + (merkleroot.lower(),)
         children = (None,) + tuple(map(str.lower, siblings))
         sides = (None,) + sides

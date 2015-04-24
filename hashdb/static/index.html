@@ -173,7 +173,7 @@
         $("#submitHash").click(function(e){
             e.preventDefault();
           $.ajax({type: "GET",
-                url: "api/proof/" + $("#hashInput").val(),
+                url: "api/tree/" + $("#hashInput").val(),
                 data: { },
             success:function(result){
               $("#proof").html(draw(result));
