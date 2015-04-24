@@ -103,7 +103,7 @@ function buildNetwork(nodeList,edges){
 function hashValues(){
   var leftHash = document.getElementById("lefthash").value 
   var rightHash = document.getElementById("righthash").value
-  var concatHash = CryptoJS.SHA256(leftHash + rightHash).toString(CryptoJS.enc.Hex)
+  var concatHash = CryptoJS.SHA256(CryptoJS.SHA256(CryptoJS.enc.Hex.parse(leftHash + rightHash))).toString(CryptoJS.enc.Hex)
   document.getElementById('answer').innerHTML = "<div class='form-group'><b>Concatenated Hash :</b> " + concatHash + "<br /></div>"
   console.log(concatHash)
 }
