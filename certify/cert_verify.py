@@ -13,6 +13,7 @@ APIJSONTIME = 'time'
 if len(sys.argv) < 3:
     print('Usage: python3 %s [file_to_check] [proof]' % sys.argv[0])
     #print('Proof file only must be supplied when it is NOT [file_to_check].dproof')
+    sys.exit(1)
 
 # double sha256
 h2=lambda x: hashlib.sha256(hashlib.sha256(x).digest()).digest()
