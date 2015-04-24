@@ -87,6 +87,7 @@ def lookup_path(hashhex):
         c.execute('SELECT uploadTime FROM SubmittedHashes WHERE hash=unhex(%s)', [hashhex])
         uploadTime = c.fetchone()[0]
 
+        path = None
         if completedwindow:
             c.execute('call merklepath(%s)', [hashhex])
             path = c.fetchall()
