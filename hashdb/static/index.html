@@ -200,8 +200,9 @@
               },
                 function(data, status){
                 var time = new Date().getTime();
+                var date = new Date(time);
                 var state = "Success";
-                var wall = '<tr><td>' + data + '</td><td>' + hash + '</td><td>' + time + '</td></tr>';
+                var wall = '<tr><td>' + data + '</td><td>' + hash + '</td><td>' + date + '</td></tr>';
                 $('#insert-result > tbody:last').append(wall); // This appends to the table.
               });
           }
@@ -217,7 +218,7 @@
               $.get("api/hashes/"+hash,
                 function(data, status){
                 var state = "OK";
-                var wall = '<tr><td>' + state + '</td><td>' + data + '</td></tr>';
+                 var wall = '<tr><td>' + state + '</td><td><pre>' + data + '</pre></td></tr>';
                 $('#search-result > tbody:last').append(wall); // This appends to the table.
               });
           }
