@@ -120,6 +120,7 @@
             <label for="inputInstructions">Insert Existing SHA256 hash to generate merkle tree</label>
             <input type="text" class="form-control" id="hashInput" placeholder="sha256 hash">
             <input type="submit" name="submitHash" id="submitHash" class="btn btn-default"></input>
+            <div id="tree-error">Error: Hash not found.</div>
           </div>
           <div id="postHash">
             <h2>Proof Tree</h2>
@@ -174,6 +175,7 @@
     <script src="js/vis.js"></script>
     <script>
       $(document).ready(function(){
+        $("#tree-error").hide();
         $("#submitHash").click(function(e){
             e.preventDefault();
           $.ajax({type: "GET",
@@ -181,7 +183,12 @@
                 data: { },
             success:function(result){
               $("#proof").html(draw(result));
-            }});
+              $("#tree-error").hide();
+            },
+            error:function(xhr, ajaxOpt, thrownErr) {
+              $("#tree-error").show();
+            }
+            });
         });
       });
 
