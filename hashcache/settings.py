@@ -62,8 +62,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'hashcache',
-        'USER': 'root', # warning unsafe to use root user
-        'PASSWORD': 'password'
+        'USER': 'root' # warning unsafe to use root user
     }
 }
 

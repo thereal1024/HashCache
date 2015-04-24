@@ -46,7 +46,7 @@
           $.ajax({type: "GET",
                 url: "api/recent/" ,
                 success:function(result){
-                  simrinwahal();  //Custom injection for link wrapping
+                  recentInteraction();  //Custom injection for link wrapping
                   console.log("here")
                   var recentList = result.split("\n")
                   for(var i=0;i<recentList.length;i++){
@@ -232,10 +232,9 @@
 
 
 // ########################################################
-function simrinwahal() {
+function recentInteraction() {
   $(document).ready(function(){
     setTimeout(function(){
-      // console.log('HELLO, WORLD!');
       var ar = [];
       var ts = [];
       var a = $("#recent-result").find("td");
