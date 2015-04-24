@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^api/hashes$', views.submit_hash, name='api-submit-hash'),
     url(r'^api/hashes/([0-9a-fA-F]{64})$', views.hash_info, name='api-hash-info'),
     url(r'^api/tree/([0-9a-fA-F]{64})$', views.proof_tree, name='api-proof-tree'),
+    url(r'^api/proof/([0-9a-fA-F]{64})$', views.hash_proof, name='api-proof-doc'),
     url(r'^api/recent/$', views.recent_hashes, name='api-recent-hashes')
 )
 

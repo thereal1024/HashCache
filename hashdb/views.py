@@ -99,6 +99,57 @@ def lookup_path(hashhex):
             complete = True
     return submitted, complete, uploadTime, path, window, merkleroot
 
+def lookup_tx(window):
+    with connection.cursor() as c:
+        c.execute('SELECT Transaction.transactionID, rawdata, blockpath, txtime, '
+            'confirmations, includedBlock '
+            'FROM Transaction, Proof '
+            'WHERE Transaction.transactionID = Proof.transactionID '
+            'AND Proof.windowID = %s', [window])
+        row = c.fetchone()
+        if not row:
+            return None, None, None, None
+        
+        tx_exists = True
+        txid, rawtx, packed_path, txtime, confirms, blockid = row
+        txid = binascii.hexlify(txid).decode()
+        rawtx = binascii.hexlify(rawtx).decode()
+        blockid = binascii.hexlify(blockid).decode()
+        proofready = (confirms > 0)
+        
+        # process packed path
+        splitn = lambda line,n: [line[i:i+n] for i in range(0, len(line), n)]
+        pathelem = splitn(binascii.hexlify(packed_path).decode(),  33*2)
+        pathelem = [(e[:2],e[2:]) for e in pathelem]
+        blockpath = []
+        for side_rep, hashcode in pathelem:
+            blockpath.append((hashcode.lower(), 'right' if side_rep == '00' else 'left'))
+    
+    return tx_exists, proofready, txid, txtime, rawtx, blockid, blockpath
+    
+def hash_proof(request, hashhex):
+    hashhex = hashhex.lower()
+    submitted, complete, uploadTime, path, window, merkleroot = lookup_path(hashhex)
+    
+    if not submitted:
+        raise Http404('error: hash not submitted')
+    
+    if not complete: 
+        raise Http404('error: contained window not completed')
+    
+    tx_exists, proofready, txid, txtime, rawtx, blockid, blockpath = lookup_tx(window)
+    if not proofready:
+        raise Http404('error: proof not ready')
+    
+    jproof = dict()
+    jproof['fileHash'] = hashhex
+    jproof['txMerklePath'] = [(row[1].lower(),row[2]) for row in path]
+    jproof['txData'] = rawtx
+    jproof['blockMerklePath'] = blockpath
+    jproof['blockID'] = blockid
+    
+    return PlainResponse(json.dumps(jproof))
+
 def hash_info(request, hashhex):
     hashhex = hashhex.lower()
     submitted, complete, uploadTime, path, window, merkleroot = lookup_path(hashhex)
