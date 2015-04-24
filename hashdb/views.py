@@ -124,6 +124,7 @@ def lookup_tx(window):
         
         # process packed path
         splitn = lambda line,n: [line[i:i+n] for i in range(0, len(line), n)]
+        blockpath = None
         if packed_path:
             pathelem = splitn(binascii.hexlify(packed_path).decode(),  33*2)
             pathelem = [(e[:2],e[2:]) for e in pathelem]
