@@ -119,6 +119,13 @@ public class ProverTask {
 			
 			stmt2.executeUpdate();
 			
+			String linkProof = "INSERT into Proof Values (?,?)";
+			PreparedStatement stmt3 = conn.prepareStatement(linkProof);
+			stmt3.setBytes(1, txhash);
+			stmt3.setInt(2, lastwin);
+			
+			stmt3.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (InsufficientMoneyException e) {
@@ -233,13 +240,14 @@ public class ProverTask {
 			
 			System.out.printf("Update recorded for TX %s.\n", Hex.encodeHexString(txid));
 			
-			String query2 = "UPDATE Transaction SET confirmations = ?, blockpath = ?, rawdata = ? "
-					+ "WHERE transactionID = ?";
+			String query2 = "UPDATE Transaction SET confirmations = ?, blockpath = ?, rawdata = ?, "
+					+ "includedBlock = ? WHERE transactionID = ?";
 			PreparedStatement stmt2 = conn.prepareStatement(query2);
 			stmt2.setInt(1, confirmations);
 			stmt2.setBytes(2, path);
 			stmt2.setBytes(3, txdata);
-			stmt2.setBytes(4, txid);
+			stmt2.setBytes(4, optimalHash.getBytes());
+			stmt2.setBytes(5, txid);
 			
 			stmt2.executeUpdate();
 			// now the DB has the Window Proved !
