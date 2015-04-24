@@ -27,8 +27,11 @@ function draw(proofFile) {
   var prev = null;
   for(var i = 0; i<proof.length;i++){
     var nodes = proof[i];
-    var nodeHash = nodes["pathNode"]
+    var nodeHash = nodes["pathNode"] + " path node"
     var childHash = nodes["childNode"]
+    if (childHash != null) {
+        childHash += " sibling node"
+    }
     nodeList.push({
       id: nodeHash,
       label: "PathNode" + String(i),
@@ -100,7 +103,8 @@ function buildNetwork(nodeList,edges){
   $("#hashForm").hide()
   // add event listeners
   network.on('select', function(params) {
-    document.getElementById('selection').innerHTML = '<b>Hash Value: </b>' + params.nodes;
+      console.log(params.nodes);
+    document.getElementById('selection').innerHTML = '<b>Selected: </b>' + params.nodes[0]; //.split(" ")[0];
   });
 
 }
