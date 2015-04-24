@@ -19,3 +19,12 @@ export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH
 
 # you may get a message to 'migrate'
 python3 manage.py migrate
+
+# bitcoin transaction creator is in Java 8, uses Maven 3
+# be sure you have the right versions
+sudo apt-get install openjdk-8-jdk maven
+# build and run
+cd hashcache-blockchain
+mvn package
+cd target
+java -jar hashcache-blockchain-0.0.1-SNAPSHOT-jar-with-dependencies.jar
