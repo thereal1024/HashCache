@@ -114,9 +114,12 @@ def lookup_tx(window):
         
         tx_exists = True
         txid, rawtx, packed_path, txtime, confirms, blockid = row
-        txid = binascii.hexlify(txid).decode()
-        rawtx = binascii.hexlify(rawtx).decode()
-        blockid = binascii.hexlify(blockid).decode()
+        if txid:
+            txid = binascii.hexlify(txid).decode()
+        if rawtx:
+            rawtx = binascii.hexlify(rawtx).decode()
+        if blockid:
+            blockid = binascii.hexlify(blockid).decode()
         proofready = (confirms > 0)
         
         # process packed path
