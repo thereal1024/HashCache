@@ -13,5 +13,9 @@ source test.sql
 # use to launch server
 python3 manage.py runserver
 
+#export some sql-django connection requirements to your paths
+export PATH=$PATH:/usr/local/mysql/bin
+export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH
+
 # you may get a message to 'migrate'
 python3 manage.py migrate

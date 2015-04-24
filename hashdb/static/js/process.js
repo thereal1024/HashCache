@@ -46,7 +46,7 @@
           $.ajax({type: "GET",
                 url: "api/recent/" ,
                 success:function(result){
-
+                  recentInteraction();  //Custom injection for link wrapping
                   console.log("here")
                   var recentList = result.split("\n")
                   for(var i=0;i<recentList.length;i++){
@@ -226,3 +226,82 @@
           readfiles2(this.files);
         };
       }
+
+
+
+
+
+// ########################################################
+function recentInteraction() {
+  $(document).ready(function(){
+    setTimeout(function(){
+      var ar = [];
+      var ts = [];
+      var a = $("#recent-result").find("td");
+      for(var i = 0; i < a.length; i += 2) {  // take every second element
+          ar.push(a[i]);
+          // console.log(a[i].value);
+          $(a[i]).html('<a class="hashLinks" href="#">'+$(a[i]).text()+'</a>')
+      }
+      
+      //ar contains all the TD nodes with the hashes
+      $('.hashLinks').on('click', function(e){
+        e.preventDefault();
+        var hash = $(this).text();
+        modalOpen(hash);
+        return;
+      })
+
+
+    },200);
+  })
+}
+
+function modalOpen(hash, timestamp) {
+  console.log('hash:', hash);
+  if ($('#sim-overlay').length==0) {
+    $('#wrapper').append(
+      '<div id="sim-overlay"></div>'+
+      '<div id="sim-modal">'+
+        '<div id="cross-button"></div>'+
+        '<h1 class="hash-heading">HASH</h1>'+
+        '<h2 class="hash-title current_hash">'+hash+'</h2>'+
+        '<h1 class="hash-heading">TIMESTAMP</h1>'+
+        '<h2 class="hash-title current_timestamp">'+'timestamp to come here'+'</h2>'+
+        '<h1 class="hash-heading">VISUALIZATION</h1>'+
+        '<h2 class="hash-title link-proof">'+'Click here to view the proof'+'</h2>'+
+      '</div>'
+    );
+    $('#cross-button').on('click', function(){
+      console.log("here");
+      modalClose();
+    })
+
+    $('.link-proof').on('click', function(){
+      var hash = $('.current_hash').text();
+      modalClose();
+      $('#proof-toggle').click();
+      $('#hashInput').val(hash);
+      $('#submitHash').click();
+    });
+
+  } else {
+    $('#sim-overlay, #sim-modal').css('display', 'block');
+  }
+
+
+  console.log("HERE!");
+  $.get('/api/hashes/'+hash, function(data){
+    console.log("HERE!");
+    // console.log(data);
+    var current_hash = data.split('\n')[0].split(':')[1].slice(1);
+    var current_timestamp = data.split('\n')[1].split('added:')[1].slice(1);
+    $('.current_hash').text(current_hash);
+    $('.current_timestamp').text(current_timestamp);
+    console.log(current_timestamp);
+  })
+}
+
+function modalClose() {
+  $('#sim-overlay, #sim-modal').css('display', 'none');
+}
