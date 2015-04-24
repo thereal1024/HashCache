@@ -103,8 +103,6 @@ function buildNetwork(nodeList,edges){
 function hashValues(){
   var leftHash = document.getElementById("lefthash").value 
   var rightHash = document.getElementById("righthash").value
-  var binLeft = hex2bin(leftHash)
-  var binRight = hex2bin(rightHash)
   console.log("test")
   console.log(binLeft)
   var concatHash = CryptoJS.SHA256(CryptoJS.SHA256(CryptoJS.enc.Hex.parse(leftHash + rightHash))).toString(CryptoJS.enc.Hex)
