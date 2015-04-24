@@ -124,11 +124,12 @@ def lookup_tx(window):
         
         # process packed path
         splitn = lambda line,n: [line[i:i+n] for i in range(0, len(line), n)]
-        pathelem = splitn(binascii.hexlify(packed_path).decode(),  33*2)
-        pathelem = [(e[:2],e[2:]) for e in pathelem]
-        blockpath = []
-        for side_rep, hashcode in pathelem:
-            blockpath.append((hashcode.lower(), 'right' if side_rep == '00' else 'left'))
+        if packed_path:
+            pathelem = splitn(binascii.hexlify(packed_path).decode(),  33*2)
+            pathelem = [(e[:2],e[2:]) for e in pathelem]
+            blockpath = []
+            for side_rep, hashcode in pathelem:
+                blockpath.append((hashcode.lower(), 'right' if side_rep == '00' else 'left'))
     
     return tx_exists, proofready, txid, txtime, rawtx, blockid, blockpath
     
