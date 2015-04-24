@@ -88,6 +88,7 @@ def lookup_path(hashhex):
         uploadTime = c.fetchone()[0]
 
         path = None
+        merkleroot = None
         if completedwindow:
             c.execute('call merklepath(%s)', [hashhex])
             path = c.fetchall()
